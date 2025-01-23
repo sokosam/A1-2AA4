@@ -9,6 +9,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
+import ca.mcmaster.se2aa4.mazerunner.Maze;
 
 
 public class Main {
@@ -34,18 +35,10 @@ public class Main {
                 System.exit(1);
             }
 
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                for (int idx = 0; idx < line.length(); idx++) {
-                    if (line.charAt(idx) == '#') {
-                        System.out.print("WALL ");
-                    } else if (line.charAt(idx) == ' ') {
-                        System.out.print("PASS ");
-                    }
-                }
-                System.out.print(System.lineSeparator());
-            }
+            Maze maze = new Maze(inputFile);
+            System.out.println(maze.toString());
+
+
         } catch(Exception e) {
             logger.error("/!\\ An error has occured /!\\");
         }
