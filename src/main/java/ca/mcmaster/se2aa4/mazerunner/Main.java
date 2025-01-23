@@ -19,6 +19,7 @@ public class Main {
     public static void main(String[] args) {
         Options option = new Options();
         option.addOption("i", "input", true, "Input file path");
+        
 
         logger.info("** Starting Maze Runner");
         try {
@@ -37,13 +38,19 @@ public class Main {
 
             Maze maze = new Maze(inputFile);
             System.out.println(maze.toString());
+            
+            System.out.println("**** Computing path");
+            BasicAlgorithm algo = new BasicAlgorithm();
+            algo.setMaze(maze);
+
+            System.out.println(algo.explore());
 
 
         } catch(Exception e) {
             logger.error("/!\\ An error has occured /!\\");
         }
-        System.out.println("**** Computing path");
-        System.out.println("PATH NOT COMPUTED");
+
+
         System.out.println("** End of MazeRunner");
     }
 }
