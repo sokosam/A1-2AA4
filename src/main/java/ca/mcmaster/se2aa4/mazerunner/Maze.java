@@ -60,6 +60,15 @@ public class  Maze {
         return -1;
     }
 
+    public int getExitRow(){
+        for (int i = 0; i < this.grid.size(); i++) {
+            if (this.grid.get(i).get(this.grid.get(i).size() - 1) == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public String toString() {
         String res = "";
         for (ArrayList<Integer> row : this.grid) {
