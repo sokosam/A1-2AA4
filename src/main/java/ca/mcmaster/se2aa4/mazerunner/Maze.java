@@ -51,6 +51,15 @@ public class  Maze {
         return new ArrayList<ArrayList<Integer>>(this.grid);
     }
 
+    public int getEntranceRow() {
+        for (int i = 0; i < this.grid.size(); i++) {
+            if (this.grid.get(i).get(0) == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public String toString() {
         String res = "";
         for (ArrayList<Integer> row : this.grid) {
