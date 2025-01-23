@@ -9,6 +9,7 @@ public class BasicAlgorithm implements Explorer {
         {0, -1},  // West
         {-1, 0}   // North
     };
+    private String path;
 
     public BasicAlgorithm() {
         this.maze = null;
@@ -65,8 +66,43 @@ public class BasicAlgorithm implements Explorer {
             }
         }
 
+        this.path = path.toString();    
 
-        return path.toString();
+        return this.path;
+    }
+
+    public String getCanonicalPath() {
+        StringBuilder canonicalPath = new StringBuilder();
+        for (int i = 0; i < path.length(); i++) {
+            canonicalPath.append(path.charAt(i));
+            if (i < path.length() - 1 && path.charAt(i) != path.charAt(i + 1)) {
+                canonicalPath.append(" ");
+            }
+        }
+        return canonicalPath.toString();
+    }
+
+    public String getFactorizedPath() {
+        StringBuilder factorizedPath = new StringBuilder();
+        int i = 0;
+        while (i < path.length()) {
+            char currentChar = path.charAt(i);
+            int count = 1;
+            while (i + 1 < path.length() && path.charAt(i + 1) == currentChar) {
+                count++;
+                i++;
+            }
+            if (count > 1) {
+                factorizedPath.append(count).append(currentChar);
+            } else {
+                factorizedPath.append(currentChar);
+            }
+            if (i < path.length() - 1) {
+                factorizedPath.append(" ");
+            }
+            i++;
+        }
+        return factorizedPath.toString();
     }
 
     private static boolean canMove(ArrayList<ArrayList<Integer>> maze, int row, int col) {

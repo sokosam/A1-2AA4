@@ -1,8 +1,6 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.commons.cli.CommandLineParser;
@@ -38,12 +36,14 @@ public class Main {
 
             Maze maze = new Maze(inputFile);
             System.out.println(maze.toString());
-            
+
             System.out.println("**** Computing path");
             BasicAlgorithm algo = new BasicAlgorithm();
             algo.setMaze(maze);
 
             System.out.println(algo.explore());
+            System.out.println(algo.getCanonicalPath());
+            System.out.println(algo.getFactorizedPath());
 
 
         } catch(Exception e) {
