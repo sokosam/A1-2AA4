@@ -24,7 +24,6 @@ public class Main {
         logger.info("** Starting Maze Runner");
         try {
 
-            System.out.println("** Reading the maze from file");
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(option, args);
             logger.info("**** Reading the maze from file ");
@@ -60,8 +59,6 @@ public class Main {
             System.out.println("**** Computing path");
             BasicAlgorithm algo = new BasicAlgorithm();
             algo.setMaze(maze);
-
-            // System.out.println(algo.explore());
             algo.explore();
             System.out.println("Canonical Form: " + algo.getCanonicalPath());
             System.out.println("Factorized Form: " + algo.getFactorizedPath());
