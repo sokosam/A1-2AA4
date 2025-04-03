@@ -1,15 +1,22 @@
 package ca.mcmaster.se2aa4.mazerunner;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class BasicAlgorithm implements Explorer {
     private Maze maze;
     private static final int[][] DIRECTIONS = {
-        {0, 1},   // East
-        {1, 0},   // North
-        {0, -1},  // West
-        {-1, 0}   // South
+            { 0, 1 }, // East
+            { 1, 0 }, // North
+            { 0, -1 }, // West
+            { -1, 0 } // South
     };
     private String path;
+    public int currentRow;
+    public int currentCol;
+    private int directionIndex;
+    private int endCol;
+    private int endRow;
 
     public BasicAlgorithm() {
         this.maze = null;
@@ -17,56 +24,57 @@ public class BasicAlgorithm implements Explorer {
 
     public void setMaze(Maze maze) {
         this.maze = maze;
+        this.currentCol = 0;
+        this.currentRow = maze.getEntranceRow();
+        this.endCol = maze.getGrid().get(0).size() - 1;
+        this.endRow = maze.getExitRow();
+        this.directionIndex = 0; // Start facing East
     }
 
     public Maze getMaze() {
         return this.maze;
     }
 
+    public void reset() {
+        if (this.maze == null) {
+            return;
+        }
+        this.currentCol = 0;
+        this.currentRow = maze.getEntranceRow();
+        this.directionIndex = 0; // Start facing East
+        this.path = "";
+    }
+
     public String explore() {
         StringBuilder path = new StringBuilder();
         ArrayList<ArrayList<Integer>> grid = this.maze.getGrid();
 
-        int startRow = this.maze.getEntranceRow();
-        int startCol = 0;
-        int endRow = this.maze.getExitRow();
-        int endCol = grid.get(0).size() - 1;
-
-        int currentRow = startRow;
-        int currentCol = startCol;
-        int directionIndex = 0;  
-
-        while (!(currentRow == endRow && currentCol == endCol)) {
+        while (!(this.currentRow == this.endRow && this.currentCol == this.endCol)) {
             // Try turning right first
-            int rightDirection = (directionIndex + 1) % 4; // Turning right
-            int rightRow = currentRow + DIRECTIONS[rightDirection][0];
-            int rightCol = currentCol + DIRECTIONS[rightDirection][1];
-
-            if (canMove(grid, rightRow, rightCol)) {
+            turnRight();
+            moveForward();
+            if (canMove(grid, this.currentRow, this.currentCol)) {
                 // If the right is open, turn right and move
-                directionIndex = rightDirection; // Update direction to the right
-                currentRow = rightRow;
-                currentCol = rightCol;
                 path.append("R").append("F");
             } else {
-                // If right is blocked, try moving forward
-                int forwardRow = currentRow + DIRECTIONS[directionIndex][0];
-                int forwardCol = currentCol + DIRECTIONS[directionIndex][1];
+                // Undo Previous steps
+                moveBackward();
+                turnLeft();
 
-                if (canMove(grid, forwardRow, forwardCol)) {
+                moveForward();
+                if (canMove(grid, this.currentRow, this.currentCol)) {
                     // Move forward
-                    currentRow = forwardRow;
-                    currentCol = forwardCol;
                     path.append("F");
                 } else {
                     // If forward is also blocked, turn left
-                    directionIndex = (directionIndex + 3) % 4; // Turn left
+                    moveBackward();
+                    turnLeft();
                     path.append("L");
                 }
             }
         }
 
-        this.path = path.toString();    
+        this.path = path.toString();
 
         return this.path;
     }
@@ -107,8 +115,68 @@ public class BasicAlgorithm implements Explorer {
 
     private static boolean canMove(ArrayList<ArrayList<Integer>> maze, int row, int col) {
         return row >= 0 && row < maze.size() &&
-               col >= 0 && col < maze.get(0).size() &&
-               maze.get(row).get(col) == 0;
+                col >= 0 && col < maze.get(0).size() &&
+                maze.get(row).get(col) == 0;
     }
-    
+
+    public boolean hasFailed() {
+        if (this.maze == null) {
+            return true;
+        }
+        return !canMove(this.maze.getGrid(), this.currentRow, this.currentCol);
+    }
+
+    public void turnLeft() {
+        this.directionIndex = (this.directionIndex + 3) % 4;
+    }
+
+    public void turnRight() {
+        this.directionIndex = (this.directionIndex + 1) % 4;
+    }
+
+    public void moveForward() {
+        this.currentCol += DIRECTIONS[this.directionIndex][1];
+        this.currentRow += DIRECTIONS[this.directionIndex][0];
+    }
+
+    public void moveBackward() {
+        this.currentCol -= DIRECTIONS[this.directionIndex][1];
+        this.currentRow -= DIRECTIONS[this.directionIndex][0];
+    }
+
+    public List<Command> parsePathToCommands(String path, Explorer explorer) {
+        List<Command> commands = new ArrayList<>();
+        for (char c : path.toCharArray()) {
+            switch (c) {
+                case 'F':
+                    commands.add(new ForwardCommand(explorer));
+                    break;
+                case 'L':
+                    commands.add(new TurnLeftCommand(explorer));
+                    break;
+                case 'R':
+                    commands.add(new TurnRightCommand(explorer));
+                    break;
+                default:
+                    // ignore or handle error
+            }
+        }
+        return commands;
+    }
+
+    public boolean checkPath(String path) {
+        List<Command> commands = parsePathToCommands(path, this);
+        for (Command command : commands) {
+            command.execute();
+        }
+        return this.maze.isPossible(this.path);
+    }
+
+    public int getCurrentRow() {
+        return this.currentRow;
+    }
+
+    public int getCurrentCol() {
+        return this.currentCol;
+    }
 }

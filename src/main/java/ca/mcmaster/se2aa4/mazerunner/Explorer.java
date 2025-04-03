@@ -13,4 +13,15 @@ public interface Explorer {
 
     public String getFactorizedPath();
 
+    public void turnLeft();
+
+    public void turnRight();
+
+    public void moveForward();
+
+    public void moveBackward();
+
+    public void reset();
+
+    public boolean hasFailed();
 }

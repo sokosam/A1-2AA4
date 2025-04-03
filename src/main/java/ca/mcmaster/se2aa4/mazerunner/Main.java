@@ -6,6 +6,10 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 import ca.mcmaster.se2aa4.mazerunner.Maze;
 
@@ -43,18 +47,6 @@ public class Main {
                 throw new Exception("No entrance found in the maze");
             }
 
-            if (cmd.hasOption("p")) {
-                String path = cmd.getOptionValue("p");
-                // System.out.println("Path: " + path);
-                if (maze.isPossible(path)) {
-                    System.out.println("Input -p path is possible");
-                } else {
-                    System.out.println("Input -p path is not possible");
-                }
-            }
-
-            System.out.println("**** Computing path");
-
             // Decide which factory to use (could be via command line args, config file,
             // etc.)
             ExplorerFactory factory = null;
@@ -73,7 +65,43 @@ public class Main {
             // Use the factory method
             Explorer explorer = factory.createExplorer();
             explorer.setMaze(maze);
+
+            if (cmd.hasOption("p")) {
+                String checkPath = cmd.getOptionValue("p");
+                List<Command> commands = new ArrayList<>();
+                for (char c : checkPath.toCharArray()) {
+                    switch (c) {
+                        case 'F':
+                            commands.add(new ForwardCommand(explorer));
+                            break;
+                        case 'L':
+                            commands.add(new TurnLeftCommand(explorer));
+                            break;
+                        case 'R':
+                            commands.add(new TurnRightCommand(explorer));
+                            break;
+                        default:
+                    }
+                }
+
+                boolean success = true;
+                for (Command command : commands) {
+                    command.execute();
+                    if (explorer.hasFailed()) {
+                        success = false;
+                        break;
+                    }
+                }
+                if (success) {
+                    System.out.println("Input -p path is possible");
+                } else {
+                    System.out.println("Input -p path is not possible");
+                }
+
+            }
+            explorer.reset();
             String path = explorer.explore();
+            System.out.println("**** Computing path");
             System.out.println("Found path: " + path);
 
             System.out.println("Canonical Form: " + explorer.getCanonicalPath());

@@ -34,4 +34,34 @@ public class BFSExplorer implements Explorer {
         return "Factorized Path";
     }
 
+    @Override
+    public void turnLeft() {
+        // Example
+    }
+
+    @Override
+    public void turnRight() {
+        // Example
+    }
+
+    @Override
+    public void moveForward() {
+        // Example
+    }
+
+    @Override
+    public void moveBackward() {
+        // Example
+    }
+
+    @Override
+    public void reset() {
+        // Example
+    }
+
+    @Override
+    public boolean hasFailed() {
+        // Example
+        return false;
+    }
 }
