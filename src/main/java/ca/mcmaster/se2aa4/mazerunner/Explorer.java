@@ -6,7 +6,11 @@ public interface Explorer {
     public String explore();
 
     public void setMaze(Maze maze);
-    
+
     public Maze getMaze();
+
+    public String getCanonicalPath();
+
+    public String getFactorizedPath();
 
 }

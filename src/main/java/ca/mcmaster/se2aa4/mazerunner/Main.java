@@ -1,6 +1,5 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.commons.cli.CommandLineParser;
@@ -10,7 +9,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.CommandLine;
 import ca.mcmaster.se2aa4.mazerunner.Maze;
 
-
 public class Main {
 
     private static final Logger logger = LogManager.getLogger();
@@ -19,7 +17,7 @@ public class Main {
         Options option = new Options();
         option.addOption(new Option("i", "input", true, "Input file path"));
         option.addOption(new Option("p", "path", true, "Examine the path"));
-        
+        option.addOption(new Option("a", "algorithm", true, "Algorithm to use (bfs or basic)"));
 
         logger.info("** Starting Maze Runner");
         try {
@@ -31,8 +29,7 @@ public class Main {
             if (cmd.hasOption("i")) {
                 inputFile = cmd.getOptionValue("i");
                 logger.info("Input file: " + inputFile);
-            }
-             else {
+            } else {
                 logger.error("No input file provided");
                 System.exit(1);
             }
@@ -41,15 +38,15 @@ public class Main {
             System.out.println(" ");
             System.out.println(maze.toString());
 
-            if (maze.getEntranceRow() == -1){
+            if (maze.getEntranceRow() == -1) {
                 logger.error("No entrance found in the maze");
                 throw new Exception("No entrance found in the maze");
             }
-        
+
             if (cmd.hasOption("p")) {
                 String path = cmd.getOptionValue("p");
                 // System.out.println("Path: " + path);
-                if (maze.isPossible(path)){
+                if (maze.isPossible(path)) {
                     System.out.println("Input -p path is possible");
                 } else {
                     System.out.println("Input -p path is not possible");
@@ -57,20 +54,37 @@ public class Main {
             }
 
             System.out.println("**** Computing path");
-            BasicAlgorithm algo = new BasicAlgorithm();
-            algo.setMaze(maze);
-            algo.explore();
-            System.out.println("Canonical Form: " + algo.getCanonicalPath());
-            System.out.println("Factorized Form: " + algo.getFactorizedPath());
 
+            // Decide which factory to use (could be via command line args, config file,
+            // etc.)
+            ExplorerFactory factory = null;
+            if (cmd.hasOption("a")) {
+                String algo = cmd.getOptionValue("a");
+                if ("bfs".equalsIgnoreCase(algo)) {
+                    factory = new BFSExplorerFactory();
+                } else {
+                    factory = new BasicExplorerFactory();
+                }
+            } else {
+                // default
+                factory = new BasicExplorerFactory();
+            }
 
-        } catch(org.apache.commons.cli.ParseException pe) {
+            // Use the factory method
+            Explorer explorer = factory.createExplorer();
+            explorer.setMaze(maze);
+            String path = explorer.explore();
+            System.out.println("Found path: " + path);
+
+            System.out.println("Canonical Form: " + explorer.getCanonicalPath());
+            System.out.println("Factorized Form: " + explorer.getFactorizedPath());
+
+        } catch (org.apache.commons.cli.ParseException pe) {
             logger.error("Failed to parse command line arguments: " + pe.getMessage());
             System.exit(1);
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error("/!\\ An error has occured /!\\" + e.getMessage());
         }
-
 
         System.out.println("** End of MazeRunner");
     }
