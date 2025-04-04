@@ -158,7 +158,6 @@ public class BasicAlgorithm implements Explorer {
                     commands.add(new TurnRightCommand(explorer));
                     break;
                 default:
-                    // ignore or handle error
             }
         }
         return commands;
@@ -168,8 +167,12 @@ public class BasicAlgorithm implements Explorer {
         List<Command> commands = parsePathToCommands(path, this);
         for (Command command : commands) {
             command.execute();
+            if (this.hasFailed()) {
+                return false;
+            }
         }
-        return this.maze.isPossible(this.path);
+        return true;
+
     }
 
     public int getCurrentRow() {
@@ -178,5 +181,9 @@ public class BasicAlgorithm implements Explorer {
 
     public int getCurrentCol() {
         return this.currentCol;
+    }
+
+    public int getDirectionIndex() {
+        return this.directionIndex;
     }
 }

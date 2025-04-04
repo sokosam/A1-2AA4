@@ -24,4 +24,6 @@ public interface Explorer {
     public void reset();
 
     public boolean hasFailed();
+
+    public boolean checkPath(String path);
 }

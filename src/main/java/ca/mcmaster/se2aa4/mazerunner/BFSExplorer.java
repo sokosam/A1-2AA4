@@ -64,4 +64,10 @@ public class BFSExplorer implements Explorer {
         // Example
         return false;
     }
+
+    @Override
+    public boolean checkPath(String path) {
+        // Example
+        return false;
+    }
 }

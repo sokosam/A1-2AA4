@@ -84,14 +84,7 @@ public class Main {
                     }
                 }
 
-                boolean success = true;
-                for (Command command : commands) {
-                    command.execute();
-                    if (explorer.hasFailed()) {
-                        success = false;
-                        break;
-                    }
-                }
+                boolean success = explorer.checkPath(checkPath);
                 if (success) {
                     System.out.println("Input -p path is possible");
                 } else {
